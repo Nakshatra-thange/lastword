@@ -37,9 +37,9 @@ function getProgram(connection: Connection, wallet: Keypair): LastwordProgram {
   const idlWithAddress = {
     ...(idl as object),
     address: CONFIG.PROGRAM_ID,
-  } as anchor.Idl & { address: string };
+  } as Lastword;
   
-  return new anchor.Program(idlWithAddress as anchor.Idl, provider) as LastwordProgram;
+  return new anchor.Program<Lastword>(idlWithAddress, provider);
 }
 
 
