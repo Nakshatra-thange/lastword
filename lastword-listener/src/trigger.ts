@@ -7,6 +7,7 @@ import {
   
 } from "@solana/web3.js";
 import { CONFIG } from "./config";
+import type { Lastword } from "../../lastword/target/types/lastword";
 import fs from "fs";
 import path from "path";
 
@@ -21,7 +22,9 @@ function getWallet(): Keypair {
   return Keypair.fromSecretKey(Uint8Array.from(secret));
 }
 
-function getProgram(connection: Connection, wallet: Keypair): anchor.Program {
+type LastwordProgram = anchor.Program<Lastword>;
+
+function getProgram(connection: Connection, wallet: Keypair): LastwordProgram {
   const idl = JSON.parse(
     fs.readFileSync(path.resolve(__dirname, "../../target/idl/lastword.json"), "utf-8")
   );
@@ -30,10 +33,15 @@ function getProgram(connection: Connection, wallet: Keypair): anchor.Program {
     new anchor.Wallet(wallet),
     { commitment: "confirmed" }
   );
-  return new anchor.Program(idl, new PublicKey(CONFIG.PROGRAM_ID), provider);
+  
+  const idlWithAddress = {
+    ...(idl as object),
+    address: CONFIG.PROGRAM_ID,
+  } as anchor.Idl & { address: string };
+  
+  return new anchor.Program(idlWithAddress as anchor.Idl, provider) as LastwordProgram;
 }
 
-// ─── PDA helpers ──────────────────────────────────────────────────────────────
 
 function switchPda(owner: PublicKey, switchId: number, programId: PublicKey): PublicKey {
   const [pda] = PublicKey.findProgramAddressSync(
@@ -43,7 +51,7 @@ function switchPda(owner: PublicKey, switchId: number, programId: PublicKey): Pu
   return pda;
 }
 
-// ─── Main trigger function ─────────────────────────────────────────────────────
+
 
 export interface TriggerPayload {
   ownerPubkey: string;
@@ -96,7 +104,6 @@ export async function executeTrigger(payload: TriggerPayload): Promise<string | 
         switchAccount: switchAccPubkey,
         beneficiary:   beneficiary,
         caller:        wallet.publicKey,
-        systemProgram: SystemProgram.programId,
       })
       .rpc();
 
@@ -118,7 +125,7 @@ export async function executeTrigger(payload: TriggerPayload): Promise<string | 
 async function executeTriggerSpl(
   payload: TriggerPayload,
   switchAccPubkey: PublicKey,
-  program: anchor.Program,
+  program: LastwordProgram,
   wallet: Keypair
 ): Promise<string | null> {
 
@@ -138,8 +145,6 @@ async function executeTriggerSpl(
         escrowTokenAccount:     escrowAta,
         beneficiaryTokenAccount: beneficiaryAta,
         caller:                 wallet.publicKey,
-        tokenProgram:           (await import("@solana/spl-token")).TOKEN_PROGRAM_ID,
-        systemProgram:          SystemProgram.programId,
       })
       .rpc();
 
