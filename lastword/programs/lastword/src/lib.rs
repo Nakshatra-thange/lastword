@@ -670,7 +670,7 @@ fn verify_ed25519_signature(
     message: &[u8; 32],
     signature: &[u8; 64],
 ) -> Result<()> {
-    let ix = ix_sysvar::get_instruction_relative(0, ix_sysvar)
+    let ix = ix_sysvar::get_instruction_relative(-1, ix_sysvar)
         .map_err(|_| LastWordError::InvalidSignature)?;
 
     require!(
