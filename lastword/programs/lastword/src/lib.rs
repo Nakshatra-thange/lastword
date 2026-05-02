@@ -670,7 +670,11 @@ fn verify_ed25519_signature(
     message: &[u8; 32],
     signature: &[u8; 64],
 ) -> Result<()> {
-    let ix = ix_sysvar::get_instruction_relative(-1, ix_sysvar)
+    let current_index = ix_sysvar::load_current_index_checked(ix_sysvar)
+        .map_err(|_| LastWordError::InvalidSignature)?;
+    require!(current_index > 0, LastWordError::InvalidSignature);
+
+    let ix = ix_sysvar::load_instruction_at_checked((current_index - 1) as usize, ix_sysvar)
         .map_err(|_| LastWordError::InvalidSignature)?;
 
     require!(
@@ -679,12 +683,42 @@ fn verify_ed25519_signature(
     );
 
     let data = ix.data;
-    // Layout: count(1) + pad(1) + offsets(14) = 16 bytes header, then sig(64) + pk(32) + msg(32)
-    require!(data.len() >= 16 + 64 + 32 + 32, LastWordError::InvalidSignature);
+    msg!("checkin current ix index: {}", current_index);
+    msg!("ed25519 ix data len: {}", data.len());
+    // Ed25519Program encodes a 16-byte header with offsets into the payload.
+    require!(data.len() >= 16, LastWordError::InvalidSignature);
 
-    let ix_signature = &data[16..80];
-    let ix_pubkey   = &data[80..112];
-    let ix_message  = &data[112..144];
+    let num_signatures = data[0];
+    require!(num_signatures == 1, LastWordError::InvalidSignature);
+
+    let read_u16 = |start: usize| -> Option<usize> {
+        let bytes: [u8; 2] = data.get(start..start + 2)?.try_into().ok()?;
+        Some(u16::from_le_bytes(bytes) as usize)
+    };
+
+    let signature_offset = read_u16(2).ok_or(LastWordError::InvalidSignature)?;
+    let public_key_offset = read_u16(6).ok_or(LastWordError::InvalidSignature)?;
+    let message_data_offset = read_u16(10).ok_or(LastWordError::InvalidSignature)?;
+    let message_data_size = read_u16(12).ok_or(LastWordError::InvalidSignature)?;
+    msg!(
+        "ed25519 offsets sig={} pk={} msg={} msg_size={}",
+        signature_offset,
+        public_key_offset,
+        message_data_offset,
+        message_data_size
+    );
+
+    require!(message_data_size == 32, LastWordError::InvalidSignature);
+
+    let ix_signature = data
+        .get(signature_offset..signature_offset + 64)
+        .ok_or(LastWordError::InvalidSignature)?;
+    let ix_pubkey = data
+        .get(public_key_offset..public_key_offset + 32)
+        .ok_or(LastWordError::InvalidSignature)?;
+    let ix_message = data
+        .get(message_data_offset..message_data_offset + message_data_size)
+        .ok_or(LastWordError::InvalidSignature)?;
 
     require!(ix_pubkey == pubkey.as_ref(), LastWordError::InvalidSignature);
     require!(ix_signature == signature.as_ref(), LastWordError::InvalidSignature);

@@ -15,6 +15,7 @@
 
 import * as anchor from "@coral-xyz/anchor";
 import { BN } from "@coral-xyz/anchor";
+import type { Lastword } from "../target/types/lastword";
 import {
   Connection,
   Keypair,
@@ -135,7 +136,7 @@ async function main() {
     { commitment: "confirmed" }
   );
   anchor.setProvider(provider);
-  const program = new anchor.Program(idl, PROGRAM_ID, provider);
+  const program = new anchor.Program<Lastword>(idl as Lastword, provider);
 
   // ── Derive PDAs ────────────────────────────────────────────────────────────
 
@@ -181,7 +182,7 @@ async function main() {
         DUMMY_ARWEAVE_TX_ID,
         new BN(0)                 // no SOL escrowed for message type
       )
-      .accounts({
+      .accountsStrict({
         switchAccount:     switchPubkey,
         walletSwitchCount: counterPubkey,
         owner:             wallet.publicKey,
@@ -229,7 +230,7 @@ async function main() {
 
   const checkinIx = await program.methods
     .checkin(Array.from(signature) as any)
-    .accounts({
+    .accountsStrict({
       switchAccount: switchPubkey,
       owner:         wallet.publicKey,
       ixSysvar:      anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
