@@ -26,7 +26,7 @@ type LastwordProgram = anchor.Program<Lastword>;
 
 function getProgram(connection: Connection, wallet: Keypair): LastwordProgram {
   const idl = JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, "../../target/idl/lastword.json"), "utf-8")
+    fs.readFileSync(path.resolve(__dirname, "../../lastword/target/idl/lastword.json"), "utf-8")
   );
   const provider = new anchor.AnchorProvider(
     connection,

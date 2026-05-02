@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { CONFIG, SLOTS_PER_DAY } from "./config";
+import { CONFIG} from "./config";
 import { executeTrigger, pollDeadlines, TriggerPayload } from "./trigger";
 import { publishMessage, publishedMessages, MessageTriggeredEvent } from "./publisher";
 import * as anchor from "@coral-xyz/anchor";
@@ -21,7 +21,7 @@ type LastwordProgram = anchor.Program<Lastword>;
 
 function getReadonlyProgram(connection: Connection): LastwordProgram {
   const idl = JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, "../../target/idl/lastword.json"), "utf-8")
+    fs.readFileSync(path.resolve(__dirname, "../../lastword/target/idl/lastword.json"), "utf-8")
   ) as Lastword;
 
   const provider = new anchor.AnchorProvider(connection, {} as anchor.Wallet, {
