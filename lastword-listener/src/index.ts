@@ -4,6 +4,7 @@ import { executeTrigger, pollDeadlines, TriggerPayload } from "./trigger";
 import { publishMessage, publishedMessages, MessageTriggeredEvent } from "./publisher";
 import * as anchor from "@coral-xyz/anchor";
 import { Connection, PublicKey } from "@solana/web3.js";
+import type { Lastword } from "../../lastword/target/types/lastword";
 import fs from "fs";
 import path from "path";
 
@@ -15,6 +16,20 @@ app.use(express.json());
 // For the demo this is fine — it rebuilds from on-chain state on restart.
 
 const switchRegistry: Map<string, TriggerPayload> = new Map();
+
+type LastwordProgram = anchor.Program<Lastword>;
+
+function getReadonlyProgram(connection: Connection): LastwordProgram {
+  const idl = JSON.parse(
+    fs.readFileSync(path.resolve(__dirname, "../../target/idl/lastword.json"), "utf-8")
+  ) as Lastword;
+
+  const provider = new anchor.AnchorProvider(connection, {} as anchor.Wallet, {
+    commitment: "confirmed",
+  });
+
+  return new anchor.Program<Lastword>(idl, provider);
+}
 
 function registryKey(owner: string, switchId: number): string {
   return `${owner}:${switchId}`;
@@ -110,14 +125,7 @@ app.post("/webhook/created", async (req: Request, res: Response) => {
 
     // Re-fetch the full account state from chain to get all fields
     const connection = new Connection(CONFIG.RPC_URL, "confirmed");
-    const idl = JSON.parse(
-      fs.readFileSync(path.resolve(__dirname, "../../target/idl/lastword.json"), "utf-8")
-    );
-    const program = new anchor.Program(
-      idl,
-      new PublicKey(CONFIG.PROGRAM_ID),
-      new anchor.AnchorProvider(connection, {} as any, {})
-    );
+    const program = getReadonlyProgram(connection);
 
     const switchPubkey = new PublicKey(accountData.account);
     const sw = await program.account.switchAccount.fetch(switchPubkey);
@@ -178,14 +186,7 @@ app.post("/webhook/triggered", async (req: Request, res: Response) => {
 
     // Build the event from account data
     const connection = new Connection(CONFIG.RPC_URL, "confirmed");
-    const idl = JSON.parse(
-      fs.readFileSync(path.resolve(__dirname, "../../target/idl/lastword.json"), "utf-8")
-    );
-    const program = new anchor.Program(
-      idl,
-      new PublicKey(CONFIG.PROGRAM_ID),
-      new anchor.AnchorProvider(connection, {} as any, {})
-    );
+    const program = getReadonlyProgram(connection);
 
     const switchPubkey = new PublicKey(accountData.account);
     const sw = await program.account.switchAccount.fetch(switchPubkey);
@@ -218,6 +219,9 @@ app.post("/trigger/:owner/:switchId", async (req: Request, res: Response) => {
   }
 
   const { owner, switchId } = req.params;
+  if (!owner || !switchId) {
+    return res.status(400).json({ error: "Missing owner or switchId route params" });
+  }
   const key = registryKey(owner, parseInt(switchId));
   const payload = switchRegistry.get(key);
 
@@ -258,15 +262,8 @@ async function syncRegistryFromChain() {
   console.log(`[sync] Syncing switch registry from chain...`);
   try {
     const connection = new Connection(CONFIG.RPC_URL, "confirmed");
-    const idl = JSON.parse(
-      fs.readFileSync(path.resolve(__dirname, "../../target/idl/lastword.json"), "utf-8")
-    );
     const programId = new PublicKey(CONFIG.PROGRAM_ID);
-    const program = new anchor.Program(
-      idl,
-      programId,
-      new anchor.AnchorProvider(connection, {} as any, {})
-    );
+    const program = getReadonlyProgram(connection);
 
     // Fetch all SwitchAccount accounts for this program
     const accounts = await connection.getProgramAccounts(programId, {
