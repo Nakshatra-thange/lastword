@@ -12,7 +12,7 @@ lastword = "D4Frg928RDwrsxYHZnjcwHhMVz8VaKy2zo4raMc1cLL6"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
