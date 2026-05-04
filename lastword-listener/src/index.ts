@@ -4,7 +4,7 @@ import { executeTrigger, pollDeadlines, TriggerPayload } from "./trigger";
 import { publishMessage, publishedMessages, MessageTriggeredEvent } from "./publisher";
 import * as anchor from "@coral-xyz/anchor";
 import { Connection, PublicKey } from "@solana/web3.js";
-import type { Lastword } from "../../lastword/target/types/lastword";
+import type { Lastword } from "./idl/lastword";
 import fs from "fs";
 import path from "path";
 
@@ -21,7 +21,7 @@ type LastwordProgram = anchor.Program<Lastword>;
 
 function getReadonlyProgram(connection: Connection): LastwordProgram {
   const idl = JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, "../../lastword/target/idl/lastword.json"), "utf-8")
+    fs.readFileSync(path.resolve(__dirname, "idl/lastword.json"), "utf-8")
   ) as Lastword;
 
   const provider = new anchor.AnchorProvider(connection, {} as anchor.Wallet, {

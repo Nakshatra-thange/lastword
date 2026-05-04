@@ -1,0 +1,908 @@
+{
+  "address": "D4Frg928RDwrsxYHZnjcwHhMVz8VaKy2zo4raMc1cLL6",
+  "metadata": {
+    "name": "lastword",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "cancel",
+      "discriminator": [
+        232,
+        219,
+        223,
+        41,
+        219,
+        236,
+        220,
+        190
+      ],
+      "accounts": [
+        {
+          "name": "switch_account",
+          "writable": true
+        },
+        {
+          "name": "wallet_switch_count",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  115,
+                  116,
+                  119,
+                  111,
+                  114,
+                  100,
+                  95,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "switch_account",
+            "wallet_switch_count"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "cancel_spl",
+      "discriminator": [
+        147,
+        74,
+        147,
+        41,
+        28,
+        118,
+        70,
+        94
+      ],
+      "accounts": [
+        {
+          "name": "switch_account",
+          "writable": true
+        },
+        {
+          "name": "wallet_switch_count",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  115,
+                  116,
+                  119,
+                  111,
+                  114,
+                  100,
+                  95,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrow_token_account",
+          "docs": [
+            "Escrow ATA owned by the switch PDA"
+          ],
+          "writable": true
+        },
+        {
+          "name": "owner_token_account",
+          "docs": [
+            "Owner's ATA to receive tokens back"
+          ],
+          "writable": true
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "switch_account",
+            "wallet_switch_count"
+          ]
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "checkin",
+      "discriminator": [
+        223,
+        175,
+        165,
+        27,
+        123,
+        7,
+        54,
+        252
+      ],
+      "accounts": [
+        {
+          "name": "switch_account",
+          "writable": true
+        },
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "switch_account"
+          ]
+        },
+        {
+          "name": "ix_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "slot_hashes",
+          "address": "SysvarS1otHashes111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "signature",
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "create_switch",
+      "discriminator": [
+        120,
+        11,
+        193,
+        114,
+        80,
+        234,
+        99,
+        128
+      ],
+      "accounts": [
+        {
+          "name": "switch_account",
+          "writable": true
+        },
+        {
+          "name": "wallet_switch_count",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  115,
+                  116,
+                  119,
+                  111,
+                  114,
+                  100,
+                  95,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "slot_hashes",
+          "address": "SysvarS1otHashes111111111111111111111111111"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "switch_id",
+          "type": "u8"
+        },
+        {
+          "name": "switch_type",
+          "type": {
+            "defined": {
+              "name": "SwitchType"
+            }
+          }
+        },
+        {
+          "name": "beneficiary_type",
+          "type": {
+            "defined": {
+              "name": "BeneficiaryType"
+            }
+          }
+        },
+        {
+          "name": "beneficiary",
+          "type": "pubkey"
+        },
+        {
+          "name": "interval_days",
+          "type": "u64"
+        },
+        {
+          "name": "payload_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "arweave_tx_id",
+          "type": {
+            "array": [
+              "u8",
+              43
+            ]
+          }
+        },
+        {
+          "name": "escrowed_amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "trigger",
+      "discriminator": [
+        215,
+        172,
+        161,
+        36,
+        115,
+        157,
+        116,
+        147
+      ],
+      "accounts": [
+        {
+          "name": "switch_account",
+          "writable": true
+        },
+        {
+          "name": "beneficiary",
+          "writable": true
+        },
+        {
+          "name": "caller",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "trigger_spl",
+      "discriminator": [
+        234,
+        75,
+        197,
+        62,
+        220,
+        66,
+        233,
+        224
+      ],
+      "accounts": [
+        {
+          "name": "switch_account",
+          "writable": true
+        },
+        {
+          "name": "escrow_token_account",
+          "docs": [
+            "Escrow ATA owned by the switch PDA"
+          ],
+          "writable": true
+        },
+        {
+          "name": "beneficiary_token_account",
+          "docs": [
+            "Beneficiary's ATA — must match switch_account.beneficiary"
+          ],
+          "writable": true
+        },
+        {
+          "name": "caller",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "SwitchAccount",
+      "discriminator": [
+        142,
+        228,
+        4,
+        199,
+        149,
+        78,
+        209,
+        113
+      ]
+    },
+    {
+      "name": "WalletSwitchCount",
+      "discriminator": [
+        203,
+        92,
+        253,
+        30,
+        53,
+        19,
+        110,
+        150
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "CheckinCompleted",
+      "discriminator": [
+        35,
+        228,
+        166,
+        241,
+        165,
+        72,
+        46,
+        141
+      ]
+    },
+    {
+      "name": "InstructionTriggered",
+      "discriminator": [
+        172,
+        128,
+        6,
+        181,
+        194,
+        94,
+        226,
+        143
+      ]
+    },
+    {
+      "name": "MessageTriggered",
+      "discriminator": [
+        53,
+        57,
+        27,
+        6,
+        104,
+        204,
+        213,
+        51
+      ]
+    },
+    {
+      "name": "SwitchCancelled",
+      "discriminator": [
+        46,
+        196,
+        183,
+        131,
+        1,
+        130,
+        141,
+        151
+      ]
+    },
+    {
+      "name": "SwitchCreated",
+      "discriminator": [
+        55,
+        40,
+        99,
+        122,
+        102,
+        61,
+        8,
+        156
+      ]
+    },
+    {
+      "name": "SwitchTriggered",
+      "discriminator": [
+        108,
+        114,
+        165,
+        112,
+        188,
+        173,
+        179,
+        11
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidSwitchId",
+      "msg": "Switch ID must be between 0 and 4"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidInterval",
+      "msg": "Interval must be between 3 and 365 days"
+    },
+    {
+      "code": 6002,
+      "name": "SwitchNotActive",
+      "msg": "Switch is not in Active status"
+    },
+    {
+      "code": 6003,
+      "name": "DeadlinePassed",
+      "msg": "Deadline has already passed — switch should be triggered"
+    },
+    {
+      "code": 6004,
+      "name": "DeadlineNotReached",
+      "msg": "Deadline has not been reached yet"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidSignature",
+      "msg": "Invalid ed25519 signature over challenge nonce"
+    },
+    {
+      "code": 6006,
+      "name": "CancelCooldownActive",
+      "msg": "Cannot cancel within 48 hours of creation"
+    },
+    {
+      "code": 6007,
+      "name": "SwitchLimitReached",
+      "msg": "Wallet has reached the maximum of 5 active switches"
+    },
+    {
+      "code": 6008,
+      "name": "UseTriggerSpl",
+      "msg": "SPL asset switch — use trigger_spl instruction"
+    },
+    {
+      "code": 6009,
+      "name": "UseCancelSpl",
+      "msg": "SPL asset switch — use cancel_spl instruction"
+    },
+    {
+      "code": 6010,
+      "name": "WrongSwitchType",
+      "msg": "Wrong switch type for this instruction"
+    },
+    {
+      "code": 6011,
+      "name": "NotSplSwitch",
+      "msg": "This switch does not have an SPL mint"
+    },
+    {
+      "code": 6012,
+      "name": "WrongBeneficiary",
+      "msg": "Beneficiary account does not match switch record"
+    },
+    {
+      "code": 6013,
+      "name": "WrongTokenAccount",
+      "msg": "Token account does not match expected mint or owner"
+    }
+  ],
+  "types": [
+    {
+      "name": "BeneficiaryType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Wallet"
+          },
+          {
+            "name": "Squads"
+          },
+          {
+            "name": "Arweave"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CheckinCompleted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "switch_id",
+            "type": "u8"
+          },
+          {
+            "name": "new_deadline_slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InstructionTriggered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "switch_id",
+            "type": "u8"
+          },
+          {
+            "name": "beneficiary",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MessageTriggered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "switch_id",
+            "type": "u8"
+          },
+          {
+            "name": "arweave_tx_id",
+            "type": {
+              "array": [
+                "u8",
+                43
+              ]
+            }
+          },
+          {
+            "name": "payload_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwitchAccount",
+      "docs": [
+        "One switch per PDA. Seed: [\"lastword\", owner, switch_id]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "switch_id",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "switch_type",
+            "type": {
+              "defined": {
+                "name": "SwitchType"
+              }
+            }
+          },
+          {
+            "name": "beneficiary_type",
+            "type": {
+              "defined": {
+                "name": "BeneficiaryType"
+              }
+            }
+          },
+          {
+            "name": "beneficiary",
+            "type": "pubkey"
+          },
+          {
+            "name": "checkin_interval_slots",
+            "type": "u64"
+          },
+          {
+            "name": "deadline_slot",
+            "type": "u64"
+          },
+          {
+            "name": "last_checkin_slot",
+            "type": "u64"
+          },
+          {
+            "name": "checkin_window_open",
+            "type": "u64"
+          },
+          {
+            "name": "challenge_nonce",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "SwitchStatus"
+              }
+            }
+          },
+          {
+            "name": "payload_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "arweave_tx_id",
+            "type": {
+              "array": [
+                "u8",
+                43
+              ]
+            }
+          },
+          {
+            "name": "escrowed_mint",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "escrowed_amount",
+            "type": "u64"
+          },
+          {
+            "name": "protocol_fee_paid",
+            "type": "u64"
+          },
+          {
+            "name": "created_at_slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwitchCancelled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "switch_id",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwitchCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "switch_id",
+            "type": "u8"
+          },
+          {
+            "name": "switch_type",
+            "type": {
+              "defined": {
+                "name": "SwitchType"
+              }
+            }
+          },
+          {
+            "name": "deadline_slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwitchStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Triggered"
+          },
+          {
+            "name": "Cancelled"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwitchTriggered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "switch_id",
+            "type": "u8"
+          },
+          {
+            "name": "triggered_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwitchType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Message"
+          },
+          {
+            "name": "Asset"
+          },
+          {
+            "name": "Instruction"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WalletSwitchCount",
+      "docs": [
+        "Tracks how many active switches a wallet currently has.",
+        "PDA seed: [\"lastword_count\", owner]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "count",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}
