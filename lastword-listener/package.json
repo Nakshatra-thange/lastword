@@ -3,12 +3,17 @@
     "version": "1.0.0",
     "description": "LastWord dead man's switch — off-chain trigger listener",
     "main": "dist/index.js",
+    "engines": {
+    "node": "18.x"
+  },
+
     "scripts": {
         "build": "tsc",
         "start": "node dist/index.js",
         "dev": "nodemon --exec ts-node src/index.ts",
         "tunnel": "npx ngrok http 3001"
     },
+    
     "dependencies": {
         "@coral-xyz/anchor": "^0.30.1",
         "@solana/spl-token": "^0.4.6",
@@ -17,6 +22,7 @@
         "express": "^4.22.1",
         "node-fetch": "^3.3.2",
         "tweetnacl": "^1.0.3"
+    
     },
     "devDependencies": {
         "@types/express": "^4.17.25",
